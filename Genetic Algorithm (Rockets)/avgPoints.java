@@ -11,7 +11,7 @@ public class avgPoints {
 	public avgPoints(double xPos, double yPos, String fOS) {
 		this.xPos = xPos;
 		this.yPos = yPos;
-		this.fOS = fOS;
+		this.fOS = fOS;			// "first" or "second"
 	}
 	
 	public double xPos() {
@@ -26,6 +26,11 @@ public class avgPoints {
 		this.fOS = fOS;
 	}
 	
+	/**
+	 * If fOS is "first" then it sets the color to green and if the fOS is "second" then it is set to yellow
+	 * @param g
+	 * @return Color of this set of points
+	 */
 	public Color color(Graphics g) {
 		if (fOS.equals("first")) {
 			return Color.GREEN;

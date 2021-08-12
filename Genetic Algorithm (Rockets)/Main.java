@@ -16,8 +16,8 @@ public class Main extends JPanel {
 	static int size = 400;
 	static int width = 800;
 	static int height = 800; 
-	static int targetX = width / 3;			//width / 2
-	static int targetY = height / 5;		//100
+	static int targetX = width / 3;			
+	static int targetY = height / 5;		
 	static int startX = width / 2;
 	static int startY = height - 100;
 	static int numOfRockets = 250;
@@ -30,7 +30,11 @@ public class Main extends JPanel {
 	static ArrayList<avgPoints> first = new ArrayList<avgPoints>();
 	static ArrayList<avgPoints> second = new ArrayList<avgPoints>();
 
-
+	
+	/** 
+	 * This method updates everything on the canvas with the graphics. It will continue to iterate through this 
+	 * until the program is ended.
+	 */
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 
@@ -57,7 +61,6 @@ public class Main extends JPanel {
 
 			//Evaluate fitness and does all crossover
 			fitness = evaluateFitness();
-			//System.out.println(fitness.size());
 			rockets = crossover();
 
 			//Clears all ArrayLists and copies for the second array
@@ -107,9 +110,14 @@ public class Main extends JPanel {
 		g.drawLine(0, height, width, height);
 		g.fillOval(targetX - 5, targetY - 5, 10, 10);
 
+		//Makes this method update every time upon completion
 		repaint();
 	}
 
+	/**
+	 * Finds the fitness of the rockets and makes the fitness arraylist
+	 * @return returned
+	 */
 	public static ArrayList<Rockets> evaluateFitness() {
 		ArrayList<Rockets> returned = new ArrayList<Rockets>();					//Array to be returned
 		double fitnessDist = distToTarget(startX, startY);						//Distance to target from start (600)
@@ -117,8 +125,7 @@ public class Main extends JPanel {
 
 		for (int i = 0; i < rockets.size(); i++) {								//Repeats for the pop of rockets
 			Rockets temp = rockets.get(i);										//Gets rocket from ArrayList
-			//temp.distFar(fitnessDist);										//Sets far enough to true if fit arguments
-			if (true) {		//temp.farEnough									//
+			if (true) {											//
 				double tempDist = distToTarget(temp.getX(), temp.getY());		//Gets rockets distance to target
 				int fitInit = 100;												//How many will be in fitness array to start with
 				int fitSubtract = (int) ((int) tempDist / fitnessNum);			//How much will be subtracted from fitness array added amount
@@ -135,11 +142,22 @@ public class Main extends JPanel {
 		return returned;
 	}
 
+	/**
+	 * Finds the distance from the input rocket to the target
+	 * @param x
+	 * @param y
+	 * @return
+	 */
 	public static double distToTarget(double x, double y) {
 		double dist = Math.sqrt(((targetX - x) * (targetX - x)) + ((targetY - y) * (targetY - y)));
 		return dist;
 	}
 
+	/**
+	 * This method does the crossover between two rockets. From the fitness arraylist, two random parents are chosen. 
+	 * It then randomly chooses the genes (vectors) for the child based on the parents. It does this for every rocket. 
+	 * @return returned
+	 */
 	public static ArrayList<Rockets> crossover() {
 		ArrayList<Rockets> returned = new ArrayList<Rockets>();
 
@@ -159,13 +177,9 @@ public class Main extends JPanel {
 				if (r <= 49) {
 					xChange[j] = parentA.getXChaOri()[j];
 					yChange[j] = parentA.getYChaOri()[j];
-					//xChange[j] = mutation(xChange[j]);
-					//yChange[j] = mutation(yChange[j]);
 				} else {
 					xChange[j] = parentB.getXChaOri()[j];
 					yChange[j] = parentB.getYChaOri()[j];
-					//xChange[j] = mutation(xChange[j]);
-					//yChange[j] = mutation(yChange[j]);
 				}
 			}
 
@@ -176,6 +190,13 @@ public class Main extends JPanel {
 		return returned;
 	}
 
+	/**
+	 * This method does the mutation (as the name implies) of each rocket. There has to be some level of random change for the 
+	 * possibility of improvement and this method does just that. For every gene of the rocket, it decides if that gene will 
+	 * change and what that change would be. 
+	 * @param num
+	 * @return returned
+	 */
 	public static double mutation(double num) {
 		double returned = num;
 		Random rand = new Random();
@@ -191,6 +212,7 @@ public class Main extends JPanel {
 	public static void main(String[] args) {
 		Main m = new Main();
 
+		// Handles everything to do with the canvas of the graphics.
 		JFrame frame = new JFrame();
 		frame.setSize(width, height);
 		frame.getContentPane().add(new Main());
@@ -200,6 +222,7 @@ public class Main extends JPanel {
 		frame.setVisible(true);
 		frame.add(m);
 
+		// Makes all the initial rockets in the first generation
 		for (int i = 0; i < numOfRockets; i++) {
 			double rand11 = 0;
 			double rand21 = 0;
@@ -219,9 +242,16 @@ public class Main extends JPanel {
 			}
 			rockets.add(new Rockets(startX, startY, xChange, yChange, width, height, size, false, targetX, targetY));
 		}
+		
+		//Once done, everything in the paintComponent() method will keep the program continuously running
 
 	}
 
+	/**
+	 * Takes a random imput number and has a 50% change to make it a negative
+	 * @param num
+	 * @return num
+	 */
 	public static double randNeg(double num) {
 		Random rand = new Random();
 		int r = rand.nextInt(100);
