@@ -16,4 +16,4 @@ This is a Java program that uses the JPanel, JFrame, Color and and Graphics clas
    2. The next method is the normalize() method which sets the magnitude of the vector to 1
    3. The add(), subtract(), multiply() and divide() methods all change the vector as a whole depending on an input. For example, the multiply(double d) method multiplies the vector by a scalar which in this case is d.
 
-You cant change the amount of planets spawned in each generation by changing the size variable. You can also change the range of sizes by changing the maxSize and minSize variables. To change how long each generation lasts you can change the resetRate variable.
+You can change the amount of planets spawned in each generation by changing the size variable. You can also change the range of sizes by changing the maxSize and minSize variables. To change how long each generation lasts you can change the resetRate variable.
