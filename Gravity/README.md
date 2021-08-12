@@ -3,7 +3,7 @@
 This is a Java program that uses the JPanel, JFrame, Color and and Graphics class to show the effect gravity has on planets in the program. The program is split into three main class. Each one has a very important role.
 
 1. The Main class which extends JPanel. This class has three main methods within it.
-   1. The first method if the paintComponent() method which is responsible for showing the actual graphics on the window. It always sets the background to white, setting the colors of each planet, actually drawing the planet and then having each planet feel the force of attraction of each other planet. Finally, when the time to reset happens, this method also handles that
+   1. The first method is the paintComponent() method which is responsible for showing the actual graphics on the window. It always sets the background to white, setting the colors of each planet, actually drawing the planet and then having each planet feel the force of attraction of each other planet. Finally, when the time to reset happens, this method also handles that
    2. Then second method is the dist() method which just finds the distance between two methods using the distance formula
    3. The final method in this class is the main() method. This method is responsible for creating the window to display the graphics in and creates the all the initial planets.
 2. The second class it the planet class which is controls the color, size (mass), position, velocity, acceleration and effect of gravity for each planet. (If the explanation here doesn’t make sense, check the third class which is called PVector)
