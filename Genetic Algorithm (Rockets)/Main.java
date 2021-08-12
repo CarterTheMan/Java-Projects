@@ -90,7 +90,6 @@ public class Main extends JPanel {
 			Rockets temp = rockets.get(i);
 			g.setColor(temp.color(g));
 			temp.move();
-			temp.travel();
 			g.fillOval((int) temp.xPos - 3,(int) temp.yPos - 5, 6, 10);
 		}
 
@@ -130,7 +129,6 @@ public class Main extends JPanel {
 				int fitInit = 100;												//How many will be in fitness array to start with
 				int fitSubtract = (int) ((int) tempDist / fitnessNum);			//How much will be subtracted from fitness array added amount
 				fitInit = fitInit - fitSubtract;								//Subtracted that number
-
 				fitInit *= fitInit;												//Squares the fitness number
 
 				for (int j = 0; j < fitInit; j++) {								//Repeats for the initial fitness to be added
@@ -175,15 +173,15 @@ public class Main extends JPanel {
 				Random rand = new Random();
 				int r = rand.nextInt(100);
 				if (r <= 49) {
-					xChange[j] = parentA.getXChaOri()[j];
-					yChange[j] = parentA.getYChaOri()[j];
+					xChange[j] = parentA.xChange[j];
+					yChange[j] = parentA.yChange[j];
 				} else {
-					xChange[j] = parentB.getXChaOri()[j];
-					yChange[j] = parentB.getYChaOri()[j];
+					xChange[j] = parentB.xChange[j];
+					yChange[j] = parentB.yChange[j];
 				}
 			}
 
-			returned.add(new Rockets(startX, startY, xChange, yChange, width, height, size, false, targetX, targetY));
+			returned.add(new Rockets(startX, startY, xChange, yChange, width, height, size, targetX, targetY));
 
 		}
 
@@ -240,11 +238,10 @@ public class Main extends JPanel {
 				xChange[j] = rand11;
 				yChange[j] = rand21;
 			}
-			rockets.add(new Rockets(startX, startY, xChange, yChange, width, height, size, false, targetX, targetY));
+			rockets.add(new Rockets(startX, startY, xChange, yChange, width, height, size, targetX, targetY));
 		}
 		
 		//Once done, everything in the paintComponent() method will keep the program continuously running
-
 	}
 
 	/**
