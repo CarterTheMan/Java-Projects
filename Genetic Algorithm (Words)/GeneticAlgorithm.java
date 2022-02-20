@@ -1,154 +1,171 @@
-package Main;
+package main;
 
 import java.util.*;
-import java.util.Random;
 
-public class GeneticAlgorithm {
-	
-	public static void main(String [] args) {
+public class main {
+
+	static String alphabet = "abcdefghijklmnopqrstuvwxyz.,!? ";
+
+	public static void main(String[] args) {
 		Scanner input = new Scanner(System.in);
-		ArrayList<String> pop = new ArrayList<String>();
-		ArrayList<String> fitness = new ArrayList<String>();
-		int popSize = 250;
+		ArrayList<String> fitness;
+		int populationSize = 50;	// The longer your statement, the larger the populationSize
+		double mutationRate = .05;	// The longer your statement, the lower the mutationRate
 		int generation = 1;
-		double mutationRate = .5;
-		String alphabet = "abcdefghijklmnopqrstuvwxyz ";
-		
-		//Gets the users input for the key (the desired end output)
-		System.out.println("What is the key? ");
-		String key = input.nextLine().toLowerCase();
-		
-		//Creates the first initial String that is the same size as the key
-		for (int i = 0; i < popSize; i++) {
-			String temp = "";
-			for (int j = 0; j < key.length(); j++) {
-				Random rand = new Random();
-				temp += alphabet.charAt(rand.nextInt(27));
-			}
-			pop.add(new String(temp));
-		}
-		
-		//While loop that repeats until the key has been found within the String
-		while(finish(pop, key, generation)) {
-			fitness = fitnessArray(pop, key);
-			pop = crossover(fitness, popSize, mutationRate);
-			print(pop, generation);
+		boolean targetGotten = false;
+
+		System.out.println("What is the target phrase? (lowercase please)");
+		String target = input.nextLine().toLowerCase();
+
+		ArrayList<String> population = initialization(target, populationSize);
+		displayPopulation(population, generation);
+		targetGotten = targetFound(population, target, generation);
+
+		while (!targetGotten) {
+			fitness = selection(population, target);
+			population = reproduction(fitness, populationSize);
+			population = mutation(population, mutationRate);
+			displayPopulation(population, generation);
 			generation++;
-			System.out.println(" ");
-		}		
-	}
-	
-	//Checks the String to search and see if the key has been found
-	/** 
-	 * @param pop
-	 * @param key
-	 * @param generation
-	 * @return true or false depending on if the key has been found
-	 */
-	public static boolean finish(ArrayList<String> pop, String key, int generation) {
-		for(int i = 0; i < pop.size(); i++) {
-			if (pop.get(i).contentEquals(key)) {
-				System.out.println("Generation: " + generation);
-				System.out.println("Line: " + (i + 1));
-				return false;
-			}
+			targetGotten = targetFound(population, target, generation);
 		}
-		return true;
 	}
-	
-	//Created the fitness array-list based on the String
-	//Returns the actual fitness array-list
+
 	/**
-	 * @param pop
-	 * @param key
-	 * @return temp
+	 * Creates the initial population
+	 * @param target
+	 * @param populationSize
+	 * @return population
 	 */
-	public static ArrayList<String> fitnessArray(ArrayList<String> pop, String key) {
-		ArrayList<String> temp = new ArrayList<String>();
-		for (int i = 0; i < pop.size(); i++) {
-			String name = pop.get(i);
-			int fitness = 0;
-			for (int j = 0; j < key.length(); j++) {
-				if (name.charAt(j) == key.charAt(j)) {
-					fitness++;
-				}
-			}
-			fitness *= fitness;
-			for (int j = 0; j < fitness; j++) {
-				temp.add(new String(name));
-			}
-		}
-		return temp;
-	}
-	
-	//Method that chooses two parents and creates a child between the two
-	/** 
-	 * @param fitness
-	 * @param size
-	 * @param mutationRate
-	 * @return pop
-	 */
-	public static ArrayList<String> crossover(ArrayList<String> fitness, int size, double mutationRate) {
-		ArrayList<String> pop = new ArrayList<String>();
-		
-		for (int i = 0; i < size; i++) {
-			Random rand1 = new Random();
-			int rand11 = rand1.nextInt(fitness.size());
-			Random rand2 = new Random();
-			int rand21 = rand2.nextInt(fitness.size());
-			String parentA = fitness.get(rand11);
-			String parentB = fitness.get(rand21);
+	public static ArrayList<String> initialization(String target, int populationSize) {
+		ArrayList<String> population = new ArrayList<String>();
+		for (int i = 0; i < populationSize; i++) {
 			String temp = "";
-			
-			for (int j = 0; j < fitness.get(0).length(); j++) {
-				Random rand = new Random(100);
-				if (rand.nextInt() <= 49) {
-					temp += parentA.charAt(j);
-				} else {
-					temp += parentB.charAt(j);
-				}
+			for (int j = 0; j < target.length(); j++) {
+				Random random = new Random();
+				temp += alphabet.charAt(random.nextInt(alphabet.length()));
 			}
-			
-			//Sends each member of the String through the mutation method
-			temp = mutation(temp, mutationRate);
-			pop.add(new String(temp));
+			population.add(temp);
 		}
-		return pop;
+		return population;
 	}
-	
-	//Changes individual characters in the individual that goes through this method
+
 	/**
-	 * @param name
-	 * @param mutationRate
-	 * @return name
+	 * Creates the fitness list
+	 * @param population
+	 * @param target
+	 * @return the fitness list
 	 */
-	public static String mutation(String name, double mutationRate) {
-		Random rand1 = new Random();
-		String alphabet = "abcdefghijklmnopqrstuvwxyz ";
-		for (int i = 0; i < name.length(); i++) {
-			Random rand2 = new Random();
-			if (100 * rand1.nextDouble() <= mutationRate) {
-				if (i == 0) {
-					return alphabet.charAt(rand2.nextInt(27)) + name.substring(1, name.length());
-				} else if (i == name.length()) {
-					return name.substring(0, name.length() - 1) + alphabet.charAt(rand2.nextInt(27));
-				} else {
-					return name.substring(0, i) + alphabet.charAt(rand2.nextInt(27)) + name.substring(i + 1, name.length());
+	public static ArrayList<String> selection(ArrayList<String> population, String target) {
+		ArrayList<String> fitness = new ArrayList<String>();
+		for (int i = 0; i < population.size(); i++) {
+			int counter = 0;
+			for (int j = 0; j < target.length(); j++) {
+				if (population.get(i).charAt(j) == target.charAt(j)) {
+					counter++;
 				}
 			}
+			for (int j = 0; j < counter; j++) {
+				fitness.add(population.get(i));
+			}
 		}
-		return name;
+		return fitness;
+	}
+
+	/**
+	 * Does the reproduction based on the fitness list
+	 * @param fitness
+	 * @param populationSize
+	 * @return population of children
+	 */
+	public static ArrayList<String> reproduction(ArrayList<String> fitness, int populationSize) {
+		ArrayList<String> population = new ArrayList<String>();
+
+		for (int i = 0; i < populationSize; i++) {
+			Random randomA = new Random();
+			String parentA = fitness.get(randomA.nextInt(fitness.size()));
+			Random randomB = new Random();
+			String parentB = fitness.get(randomB.nextInt(fitness.size()));
+
+			population.add(crossover(parentA, parentB));
+		}
+
+		return population;
+	}
+
+	/**
+	 * Crosses over between parents to create child
+	 * @param parentA
+	 * @param parentB
+	 * @return the child of parents A and b
+	 */
+	public static String crossover(String parentA, String parentB) {
+		String child = "";
+		for (int i = 0; i < parentA.length(); i++) {
+			Random random = new Random();
+			if (random.nextInt(100) < 50) {
+				child += parentA.charAt(i);
+			} else {
+				child += parentB.charAt(i);
+			}
+		}
+		return child;
 	}
 	
-	//Prints the String out along with the generation
 	/**
-	 * @param pop
+	 * Mutates the population
+	 * @param children
+	 * @param mutationRate
+	 * @return new population
+	 */
+	public static ArrayList<String> mutation(ArrayList<String> children, double mutationRate) {
+		ArrayList<String> population = new ArrayList<String>();
+		
+		for (int i = 0; i < children.size(); i++) {
+			String newChild = "";
+			for (int j = 0; j < children.get(i).length(); j++) {
+				Random mutationChance = new Random();
+				if (mutationChance.nextDouble() * 100 <= mutationRate) {
+					Random newLetter = new Random();
+					newChild += alphabet.charAt(newLetter.nextInt(alphabet.length()));
+				} else {
+					newChild += children.get(i).charAt(j);
+				}
+			}
+			population.add(newChild);
+		}
+		
+		return population;
+	}
+
+	/**
+	 * Displays the population to the console for user to see
+	 * @param population
 	 * @param generation
 	 */
-	public static void print(ArrayList<String> pop, int generation) {
+	public static void displayPopulation(ArrayList<String> population, int generation) {
+		System.out.println("\n\n\n\n");
 		System.out.println("Generation: " + generation);
-		for (int i = 0; i < pop.size(); i++) {
-			System.out.println((i + 1) + ": " + pop.get(i));
+		for (int i = 0; i < population.size(); i++) {
+			System.out.println(i+1 + ": " + population.get(i));
 		}
 	}
+
+	/**
+	 * Determines if the target has been found to end the program and display results
+	 * @param population
+	 * @param target
+	 * @param generation
+	 * @return true or false
+	 */
+	public static boolean targetFound(ArrayList<String> population, String target, int generation) {
+		for (int i = 0; i < population.size(); i++) {
+			if (population.get(i).equals(target)) {
+				System.out.println("\nTarget found on line " + (i+1) + " of generation " + generation + "!");
+				return true;
+			}
+		}
+		return false;
+	}
+
 }
